@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Volumen de Tanque</title>
+  <style>
+    #grafico {
+      width: 400px; /* Ancho del contenedor gráfico */
+      height: 200px;
+      border: 1px solid black;
+      margin-top: 10px;
+      position: relative;
+    }
+    #barra {
+      width: 100%; /* Ancho de la barra al 100% del contenedor gráfico */
+      background-color: blue;
+      position: absolute;
+      bottom: 0;
+    }
+    #advertencia {
+      color: red;
+      font-weight: bold;
+      display: none;
+    }
+  </style>
+  <script>
+    function calcularVolumen() {
+      // Dimensiones del tanque
+      var largo;
+      var ancho;
+      var cubicajeTotal;
+      var grupoElectrogeno;
+      var alturaMaxima;
+
+      var seleccion = document.getElementById("seleccion").value;
+      switch (seleccion) {
+        case "1":
+          grupoElectrogeno = "Grupo Electrógeno A (Romaqui)";
+          largo = 66; // cm
+          ancho = 36; // cm
+          cubicajeTotal = 7.5; // galones
+          alturaMaxima = 12; // cm
+          break;
+        case "2":
+          grupoElectrogeno = "Grupo Electrógeno B (Geresal)";
+          largo = 207; // cm
+          ancho = 74; // cm
+          cubicajeTotal = 186; // galones
+          alturaMaxima = 46; // cm
+          break;
+        case "3":
+          grupoElectrogeno = "Grupo Electrógeno C (Onan/Lister Petter GEM02-03)";
+          largo = 77; // cm
+          ancho = 52; // cm
+          cubicajeTotal = 18; // galones
+          alturaMaxima = 17; // cm
+          break;
+        case "4":
+          grupoElectrogeno = "Grupo Electrógeno D (Onan/Lister Petter GEM05)";
+          largo = 92; // cm
+          ancho = 60; // cm
+          cubicajeTotal = 18.9; // galones
+          alturaMaxima = 13; // cm
+          break;
+        case "5":
+          grupoElectrogeno = "Grupo Electrógeno E (Honda 10kw)";
+          largo = 64; // cm
+          ancho = 56.5; // cm
+          cubicajeTotal = 12.8; // galones
+          alturaMaxima = 13.5; // cm
+          break;
+        default:
+          grupoElectrogeno = "Grupo Electrógeno A (Romaqui)";
+          largo = 66; // cm
+          ancho = 36; // cm
+          cubicajeTotal = 7.5; // galones
+          alturaMaxima = 12; // cm
+      }
+
+      var altura = parseFloat(document.getElementById("altura").value); // cm
+
+      // Calcular volumen en litros (1 galón = 3.78541 litros)
+      var volumenLitros = largo * ancho * altura / 1000;
+      
+      // Convertir a galones
+      var volumenGalones = volumenLitros / 3.78541;
+
+      // Limitar la altura
+      if (altura > alturaMaxima) {
+        document.getElementById("advertencia").style.display = "block";
+        return;
+      } else {
+        document.getElementById("advertencia").style.display = "none";
+      }
+
+      // Mostrar resultado
+      document.getElementById("resultado").innerText = "Volumen del tanque: " + volumenGalones.toFixed(2) + " galones";
+
+      // Actualizar descripción del grupo electrógeno
+      document.getElementById("grupoElectrogeno").innerText = grupoElectrogeno;
+
+      // Calcular costo unitario por galón sin IGV
+      var costo;
+      if (seleccion == "1" || seleccion == "5") {
+        costo = parseFloat(document.getElementById("costoCombustible").value); // Costo de gasolina por galón con IGV
+      } else {
+        costo = parseFloat(document.getElementById("costoCombustible").value); // Costo de petróleo por galón con IGV
+      }
+
+      var costoSinIGV = costo * 0.82; // Costo unitario por galón sin IGV
+
+      // Mostrar costo unitario por galón sin IGV
+      document.getElementById("costoSinIGV").innerText = "Costo unitario por galón sin IGV: S/." + costoSinIGV.toFixed(2);
+
+      // Calcular costo total
+      var costoTotal = costoSinIGV * volumenGalones;
+
+      // Mostrar costo total
+      document.getElementById("costoTotal").innerText = "Costo total sin IGV: S/." + costoTotal.toFixed(2);
+      
+      // Representar en gráfico
+      var barra = document.getElementById("barra");
+      barra.style.height = (volumenGalones / cubicajeTotal * 100) + "%"; // Porcentaje del cubicaje total
+    }
+  </script>
+</head>
+<body>
+  <h1>Calculadora de Volumen de Tanque</h1>
+  <p>Selecciona un grupo electrógeno:</p>
+  <select id="seleccion" onchange="calcularVolumen()">
+    <option value="1">Grupo Electrógeno A (Romaqui)</option>
+    <option value="2">Grupo Electrógeno B (Geresal)</option>
+    <option value="3">Grupo Electrógeno C (Onan/Lister Petter GEM02-03)</option>
+    <option value="4">Grupo Electrógeno D (Onan/Lister Petter GEM05)</option>
+    <option value="5">Grupo Electrógeno E (Honda 10kw)</option>
+  </select>
+  <p id="grupoElectrogeno">Grupo Electrógeno A (Romaqui)</p>
+  <p>Altura variable (en cm): <input type="number" id="altura" placeholder="Altura en cm" step="any"></p>
+  <div id="grafico">
+    <div id="barra"></div>
+  </div>
+  <p id="resultado"></p>
+  <div id="advertencia">¡Supera la altura máxima del grupo electrógeno!</div>
+  <p>Costo de combustible por galón con IGV: S/.<input type="number" id="costoCombustible" placeholder="Costo de combustible"></p>
+  <p id="costoSinIGV"></p>
+  <p id="costoTotal"></p>
+  <button onclick="calcularVolumen()">Calcular</button>
+</body>
+</html>
+
